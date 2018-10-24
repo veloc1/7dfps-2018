@@ -1,0 +1,55 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://testweapon.gd" type="Script" id=1]
+[ext_resource path="res://assets/testweapon.dae" type="PackedScene" id=2]
+
+[sub_resource type="Animation" id=1]
+
+resource_name = "shoot"
+length = 0.3
+loop = false
+step = 0.05
+tracks/0/type = "value"
+tracks/0/path = NodePath("Scene Root:rotation_degrees")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.05, 0.3 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ Vector3( 0, 180, 0 ), Vector3( -10, 180, 0 ), Vector3( 0, 180, 0 ) ]
+}
+
+[node name="testweapon" type="Spatial"]
+script = ExtResource( 1 )
+
+[node name="Scene Root" parent="." instance=ExtResource( 2 )]
+transform = Transform( -1, 0, -5.6426e-07, 0, 1, 0, 5.6426e-07, 0, -1, 0, 0, 0 )
+_sections_unfolded = [ "Transform" ]
+
+[node name="RayCast" type="RayCast" parent="."]
+enabled = true
+exclude_parent = true
+cast_to = Vector3( 0, 0, -100 )
+collision_mask = 1
+collide_with_areas = false
+collide_with_bodies = true
+_sections_unfolded = [ "Collide With", "Transform" ]
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+root_node = NodePath("..")
+autoplay = ""
+playback_process_mode = 1
+playback_default_blend_time = 0.0
+playback_speed = 1.0
+anims/shoot = SubResource( 1 )
+blend_times = [  ]
+
+[node name="Timer" type="Timer" parent="."]
+process_mode = 1
+wait_time = 0.3
+one_shot = true
+autostart = false
+

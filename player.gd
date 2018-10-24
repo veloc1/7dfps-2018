@@ -10,7 +10,9 @@ const MAX_SLOPE_ANGLE = deg2rad(40)
 
 const MOUSE_SENSITIVITY = 0.5
 
-const DECAL = preload("res://decal.tscn")
+const WEAPONS = [
+	preload("res://testweapon.tscn")
+]
 
 var velocity = Vector3()
 
@@ -18,11 +20,12 @@ var direction = Vector3()
 var recoil_direction = Vector3()
 var is_jumping : bool = false
 
-onready var camera : Camera = $rotation/Camera
+var current_weapon = -1
+var weapon = null
+
 onready var rotation_point = $rotation
-onready var shoot_animation = $rotation/shoot_animation
-onready var shoot_timer : Timer = $shoot_timer
-onready var raycast : RayCast = $rotation/RayCast
+onready var weapon_holder : Spatial = $rotation/weapon_holder
+onready var weapon_change_timer : Timer = $weapon_change_timer
 
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
@@ -86,7 +89,6 @@ func _physics_process(delta):
 	hvel = hvel.linear_interpolate(target, accel * delta)
 	velocity.x = hvel.x
 	velocity.z = hvel.z
-	# velocity += recoil_direction
 	velocity = move_and_slide(velocity, Vector3(0,1,0), false, 4, MAX_SLOPE_ANGLE)
 
 func _input(event):
@@ -97,25 +99,30 @@ func _input(event):
 		var camera_rot = rotation_point.rotation_degrees
 		camera_rot.x = clamp(camera_rot.x, -70, 70)
 		rotation_point.rotation_degrees = camera_rot
+	if event is InputEventMouseButton and (event as InputEventMouseButton).button_index == BUTTON_WHEEL_UP:
+		change_weapon()
 
+func change_weapon():
+	if weapon_change_timer.time_left > 0:
+		return
+	weapon_change_timer.start()
+	
+	current_weapon += 1
+	if current_weapon == len(WEAPONS):
+		current_weapon = -1
+		weapon_holder.remove_child(weapon_holder.get_child(0))
+		weapon = null
+	else:
+		weapon = WEAPONS[current_weapon].instance()
+		weapon.set_level(get_parent())
+		weapon_holder.add_child(weapon)
+	
 func shoot():
-	if shoot_timer.time_left == 0:
-		shoot_animation.play("shoot")
-		
-		if raycast.is_colliding():
-			if raycast.get_collider() is StaticBody:
-				var decal = DECAL.instance()
-				decal.translate_object_local(raycast.get_collision_point())
-				
-				var normal = raycast.get_collision_normal()
-				decal.look_at_from_position(raycast.get_collision_point(), raycast.get_collision_point() + normal, Vector3(0, 0, 1))
-				
-				get_parent().add_child(decal)
+	if weapon and weapon.can_shoot():
+		weapon.shoot()
 		
 		# recoil
 		var cam_xform = rotation_point.get_global_transform()
 		recoil_direction += cam_xform.basis.z.normalized() * 100
 		
 		rotation_point.rotate_x(deg2rad(1))
-			
-		shoot_timer.start()
