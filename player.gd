@@ -111,8 +111,11 @@ func shoot():
 				decal.look_at_from_position(raycast.get_collision_point(), raycast.get_collision_point() + normal, Vector3(0, 0, 1))
 				
 				get_parent().add_child(decal)
-				
-				var cam_xform = rotation_point.get_global_transform()
-				recoil_direction += cam_xform.basis.z.normalized() * 300
+		
+		# recoil
+		var cam_xform = rotation_point.get_global_transform()
+		recoil_direction += cam_xform.basis.z.normalized() * 100
+		
+		rotation_point.rotate_x(deg2rad(1))
 			
 		shoot_timer.start()
