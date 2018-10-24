@@ -10,9 +10,12 @@ const MAX_SLOPE_ANGLE = deg2rad(40)
 
 const MOUSE_SENSITIVITY = 0.5
 
+const DECAL = preload("res://decal.tscn")
+
 var velocity = Vector3()
 
 var direction = Vector3()
+var recoil_direction = Vector3()
 var is_jumping : bool = false
 
 onready var camera : Camera = $rotation/Camera
@@ -26,6 +29,7 @@ func _ready():
 
 func _process(delta):
 	direction = Vector3()
+	recoil_direction = Vector3()
 	
 	var cam_xform = rotation_point.get_global_transform()
 	
@@ -70,7 +74,7 @@ func _physics_process(delta):
 	var hvel = velocity
 	hvel.y = 0
 	
-	var target = direction
+	var target = direction + recoil_direction * delta
 	target *= MAX_SPEED
 	
 	var accel
@@ -82,6 +86,7 @@ func _physics_process(delta):
 	hvel = hvel.linear_interpolate(target, accel * delta)
 	velocity.x = hvel.x
 	velocity.z = hvel.z
+	# velocity += recoil_direction
 	velocity = move_and_slide(velocity, Vector3(0,1,0), false, 4, MAX_SLOPE_ANGLE)
 
 func _input(event):
@@ -98,6 +103,16 @@ func shoot():
 		shoot_animation.play("shoot")
 		
 		if raycast.is_colliding():
-			print(raycast.get_collision_point())
+			if raycast.get_collider() is StaticBody:
+				var decal = DECAL.instance()
+				decal.translate_object_local(raycast.get_collision_point())
+				
+				var normal = raycast.get_collision_normal()
+				decal.look_at_from_position(raycast.get_collision_point(), raycast.get_collision_point() + normal, Vector3(0, 0, 1))
+				
+				get_parent().add_child(decal)
+				
+				var cam_xform = rotation_point.get_global_transform()
+				recoil_direction += cam_xform.basis.z.normalized() * 300
 			
 		shoot_timer.start()
