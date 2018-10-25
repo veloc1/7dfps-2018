@@ -4,10 +4,12 @@
 [ext_resource path="res://assets/testlevel.dae" type="PackedScene" id=2]
 
 [node name="Spatial" type="Spatial"]
+_sections_unfolded = [ "Matrix", "Transform" ]
 
 [node name="Player" parent="." instance=ExtResource( 1 )]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.84738, 0 )
 
 [node name="Scene Root" parent="." instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, -1.62921e-07, 1, 0, -1, -1.62921e-07, 0, -1, 0 )
 _sections_unfolded = [ "Transform" ]
 

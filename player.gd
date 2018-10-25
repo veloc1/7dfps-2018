@@ -11,7 +11,8 @@ const MAX_SLOPE_ANGLE = deg2rad(40)
 const MOUSE_SENSITIVITY = 0.5
 
 const WEAPONS = [
-	preload("res://testweapon.tscn")
+	preload("res://testweapon.tscn"),
+	preload("res://testweapon2.tscn"),
 ]
 
 var velocity = Vector3()
@@ -107,10 +108,12 @@ func change_weapon():
 		return
 	weapon_change_timer.start()
 	
+	if weapon_holder.get_child_count() > 0:
+		weapon_holder.remove_child(weapon_holder.get_child(0))
+	
 	current_weapon += 1
 	if current_weapon == len(WEAPONS):
 		current_weapon = -1
-		weapon_holder.remove_child(weapon_holder.get_child(0))
 		weapon = null
 	else:
 		weapon = WEAPONS[current_weapon].instance()
