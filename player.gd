@@ -15,6 +15,9 @@ const WEAPONS = [
 	preload("res://testweapon2.tscn"),
 ]
 
+signal ammo_changed(current, total)
+signal health_changed(current, total)
+
 var velocity = Vector3()
 
 var direction = Vector3()
@@ -25,6 +28,8 @@ var is_on_explosion : bool = false
 var current_weapon = -1
 var weapon = null
 
+var health = 100
+
 onready var rotation_point = $rotation
 onready var weapon_holder : Spatial = $rotation/weapon_holder
 onready var weapon_change_timer : Timer = $weapon_change_timer
@@ -33,6 +38,7 @@ onready var expl_reset_timer : Timer = $expl_reset_timer
 
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	reduce_health(0)
 
 func _process(delta):
 	direction = Vector3()
@@ -147,3 +153,9 @@ func explosion_action(explosion_position):
 	if expl_reset_timer.time_left == 0:
 		is_on_explosion = true
 		expl_reset_timer.start()
+		
+		reduce_health(10)
+
+func reduce_health(amount):
+	health -= amount
+	emit_signal("health_changed", health, 100)
