@@ -11,14 +11,14 @@ height = 1.14986
 [node name="Player" type="KinematicBody"]
 input_ray_pickable = true
 input_capture_on_drag = false
-collision_layer = 1
+collision_layer = 2
 collision_mask = 1
 move_lock_x = false
 move_lock_y = false
 move_lock_z = false
 collision/safe_margin = 0.001
 script = ExtResource( 1 )
-_sections_unfolded = [ "Collision" ]
+_sections_unfolded = [ "Collision", "collision" ]
 
 [node name="CollisionShape" type="CollisionShape" parent="."]
 transform = Transform( 0.5, 0, 0, 0, -2.18557e-08, -0.5, 0, 0.5, -2.18557e-08, 0, 0.824173, 0 )
@@ -51,6 +51,18 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 2.93061, -2.10518, -7.18373 )
 [node name="weapon_change_timer" type="Timer" parent="."]
 process_mode = 1
 wait_time = 0.5
+one_shot = true
+autostart = false
+
+[node name="floor_reset_timer" type="Timer" parent="."]
+process_mode = 1
+wait_time = 0.1
+one_shot = true
+autostart = false
+
+[node name="expl_reset_timer" type="Timer" parent="."]
+process_mode = 1
+wait_time = 0.3
 one_shot = true
 autostart = false
 

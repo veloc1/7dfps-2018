@@ -24,7 +24,7 @@ blend_times = [  ]
 
 [node name="Timer" type="Timer" parent="."]
 process_mode = 1
-wait_time = 0.3
+wait_time = 0.946232
 one_shot = true
 autostart = false
 

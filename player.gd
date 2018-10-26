@@ -1,9 +1,9 @@
 extends KinematicBody
 
-const GRAVITY = -24
+const GRAVITY = -48
 
 const MAX_SPEED = 20
-const JUMP_SPEED = 10
+const JUMP_SPEED = 20
 const ACCEL = 4.5
 const ACCEL_BACKWARD = 4.5
 const MAX_SLOPE_ANGLE = deg2rad(40)
@@ -20,6 +20,7 @@ var velocity = Vector3()
 var direction = Vector3()
 var recoil_direction = Vector3()
 var is_jumping : bool = false
+var is_on_explosion : bool = false
 
 var current_weapon = -1
 var weapon = null
@@ -27,6 +28,8 @@ var weapon = null
 onready var rotation_point = $rotation
 onready var weapon_holder : Spatial = $rotation/weapon_holder
 onready var weapon_change_timer : Timer = $weapon_change_timer
+onready var floor_reset_timer : Timer = $floor_reset_timer
+onready var expl_reset_timer : Timer = $expl_reset_timer
 
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
@@ -52,9 +55,15 @@ func _process(delta):
 	direction += -cam_xform.basis.z.normalized() * input_movement_vector.y
 	direction += cam_xform.basis.x.normalized() * input_movement_vector.x
 	
-	if is_on_floor():
-		if Input.is_action_just_pressed("movement_jump"):
+	var is_on_floor = is_on_floor()
+	if is_on_floor:
+		floor_reset_timer.start()
+	else:
+		is_on_floor = not floor_reset_timer.is_stopped() and floor_reset_timer.time_left > 0
+
+	if is_on_floor and Input.is_action_just_pressed("movement_jump") and not is_jumping:
 			is_jumping = true
+			floor_reset_timer.stop()
 	
 	if Input.is_mouse_button_pressed(1):
 		shoot()
@@ -72,6 +81,10 @@ func _physics_process(delta):
 	if is_jumping:
 		velocity.y += JUMP_SPEED
 		is_jumping = false
+	elif is_on_explosion:
+		velocity.y += JUMP_SPEED
+		is_jumping = false
+		is_on_explosion = false
 	else:
 		velocity.y += GRAVITY * delta
 	
@@ -90,7 +103,7 @@ func _physics_process(delta):
 	hvel = hvel.linear_interpolate(target, accel * delta)
 	velocity.x = hvel.x
 	velocity.z = hvel.z
-	velocity = move_and_slide(velocity, Vector3(0,1,0), false, 4, MAX_SLOPE_ANGLE)
+	velocity = move_and_slide(velocity, Vector3.UP, 0.005, 2, MAX_SLOPE_ANGLE)
 
 func _input(event):
 	if event is InputEventMouseMotion and Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
@@ -129,3 +142,8 @@ func shoot():
 		recoil_direction += cam_xform.basis.z.normalized() * 100
 		
 		rotation_point.rotate_x(deg2rad(1))
+
+func explosion_action(explosion_position):
+	if expl_reset_timer.time_left == 0:
+		is_on_explosion = true
+		expl_reset_timer.start()

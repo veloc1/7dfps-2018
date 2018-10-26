@@ -23,17 +23,6 @@ func shoot():
 		bomb.look_at(bomb_target.global_transform.origin, Vector3.UP)
 		bomb.apply_impulse(Vector3(), bomb.global_transform.basis.z * 30)
 		
-		#print(global_transform.basis)
-		#bomb.global_transform.basis = Basis(Quat(global_transform.basis))
-		#bomb.look_at(global_transform.origin + Vector3(0, 0, 10), Vector3(0, 1, 0))
-		#bomb.global_transform.origin = global_transform.origin * 1
-		
-		#bomb.look_at(global_transform.origin + Vector3(0, 0, 10), Vector3(0, 1, 0))
-		#bomb.rotation = 
-		#bomb.look_at_from_position(global_transform.scaled(Vector3(0, 0, 10)).origin, global_transform.origin, )
-		
-		
-		
 		shoot_timer.start()
 
 func set_level(level):
