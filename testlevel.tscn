@@ -15,7 +15,7 @@ margin_bottom = 120.0
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.84738, 0 )
 
 [node name="Scene Root" parent="." instance=ExtResource( 3 )]
-transform = Transform( 1, 0, 0, 0, -1.62921e-07, 1, 0, -1, -1.62921e-07, 0, -1, 0 )
+transform = Transform( 1, 0, 0, 0, -1.62921e-007, 1, 0, -1, -1.62921e-007, 0, -1, 0 )
 _sections_unfolded = [ "Transform" ]
 
 [connection signal="health_changed" from="Player" to="ui_game" method="_on_Player_health_changed"]
